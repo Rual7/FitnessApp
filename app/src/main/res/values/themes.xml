@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.FitnessApp" parent="android:Theme.Material.NoActionBar" />
+
+    <!-- System splash shown while the process starts; switches to Theme.FitnessApp afterwards. -->
+    <style name="Theme.FitnessApp.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.FitnessApp</item>
+    </style>
+</resources>

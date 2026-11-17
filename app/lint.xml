@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- The logo vectors are generated from a traced image (design/generate_logo.py): their paths are long by design. -->
+    <issue id="VectorPath" severity="ignore" />
+</lint>

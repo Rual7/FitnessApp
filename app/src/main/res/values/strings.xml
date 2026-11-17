@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FitnessApp</string>
+
+    <!-- Home / exercise selection -->
+    <string name="home_title">Choose exercise</string>
+    <string name="home_subtitle">Pick an exercise to start tracking</string>
+    <string name="exercise_bicep_curl">Bicep curl</string>
+    <string name="exercise_bicep_curl_hint">Camera: front view</string>
+
+    <!-- Workout -->
+    <string name="back">Back</string>
+    <string name="camera_permission_title">Camera access needed</string>
+    <string name="camera_permission_body">The camera is used on this device only, to follow your movement. No video is stored or sent anywhere.</string>
+    <string name="camera_permission_grant">Grant camera access</string>
+    <string name="camera_flip">Flip camera</string>
+    <string name="debug_fps">Camera %1$.1f fps · Pose %2$.1f fps · %3$d ms</string>
+    <string name="debug_person_yes">Person detected</string>
+    <string name="debug_person_no">No person</string>
+    <string name="debug_visibility">Visibility  L: sh %1$.2f  el %2$.2f  wr %3$.2f\nR: sh %4$.2f  el %5$.2f  wr %6$.2f</string>
+    <string name="debug_angle">Elbow %1$s · %2$s · %3$s</string>
+    <string name="debug_angle_none">no angle</string>
+    <string name="reps_label">repetitions</string>
+    <string name="reset_counter">Reset</string>
+    <string name="msg_enter_frame">Step into the frame</string>
+    <string name="msg_show_arm">Show your arms</string>
+    <string name="msg_step_back">Step back</string>
+    <string name="msg_get_ready">Get ready… %1$d</string>
+    <string name="msg_counting">Curl your arm</string>
+    <string name="msg_out_of_frame">I can\'t see you</string>
+    <string name="msg_out_of_frame_sub">Come back into the frame</string>
+    <string name="msg_counting_paused">Counting paused</string>
+    <string name="msg_suggest_end">You have been away for a while. Finish the session?</string>
+    <string name="out_of_frame_summary">Out of frame: %1$d× · %2$s</string>
+    <string name="pose_error">Pose engine failed: %1$s</string>
+</resources>
