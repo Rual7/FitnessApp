@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.fitnessapp.R
 import com.fitnessapp.cv.engine.TrackingMessage
 import com.fitnessapp.cv.engine.WorkoutSnapshot
-import java.util.Locale
+import com.fitnessapp.ui.formatDuration
 import kotlin.math.ceil
 
 /** The big repetition counter, the current status message and the out-of-frame summary. */
@@ -63,10 +63,4 @@ internal fun RepetitionPanel(snapshot: WorkoutSnapshot?) {
             )
         }
     }
-}
-
-/** m:ss, e.g. 0:06. */
-internal fun formatDuration(ms: Long): String {
-    val totalSeconds = ms / 1000
-    return String.format(Locale.ROOT, "%d:%02d", totalSeconds / 60, totalSeconds % 60)
 }

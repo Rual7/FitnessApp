@@ -45,10 +45,15 @@ class BicepCurlTracker(
     private val counter = RepCounter(curl)
     private val smoother = ExponentialSmoother(curl.smoothingAlpha)
 
+    private var countingStartedAtMs: Long? = null
+    private var lastFrameMs: Long? = null
+
     fun process(frame: PoseFrame): WorkoutSnapshot {
         val now = frame.timestampMs
         val reading = armReader.read(frame)
         val update = stateMachine.update(now, reading.personDetected, reading.usable)
+        lastFrameMs = now
+        if (update.state == TrackingState.COUNTING && countingStartedAtMs == null) countingStartedAtMs = now
 
         if (update.interrupted || update.resumed) {
             // An interrupted repetition is never counted; after resuming, the machine restarts
@@ -60,7 +65,7 @@ class BicepCurlTracker(
         var smoothed: Double? = null
         if (update.state == TrackingState.COUNTING && reading.elbowAngleDeg != null) {
             smoothed = smoother.add(reading.elbowAngleDeg)
-            counter.update(smoothed)
+            counter.update(smoothed, now)
         }
 
         return WorkoutSnapshot(
@@ -78,6 +83,24 @@ class BicepCurlTracker(
         )
     }
 
+    /** Totals of the set so far. [averageFps] comes from the caller, which owns the frame meters. */
+    fun summary(averageFps: Float = 0f): SessionSummary {
+        val end = lastFrameMs ?: 0L
+        val duration = countingStartedAtMs?.let { end - it } ?: 0L
+        val outOfFrame = stateMachine.outOfFrameMs(end)
+        return SessionSummary(
+            reps = counter.reps,
+            durationMs = duration,
+            activeMs = (duration - outOfFrame).coerceAtLeast(0L),
+            outOfFrameMs = outOfFrame,
+            outOfFrameCount = stateMachine.outOfFrameCount,
+            averageRepMs = counter.averageRepMs,
+            minAngleDeg = counter.minAngleDeg,
+            maxAngleDeg = counter.maxAngleDeg,
+            averageFps = averageFps,
+        )
+    }
+
     private fun messageFor(state: TrackingState, hint: PositioningHint, now: Long): TrackingMessage = when (state) {
         TrackingState.SEARCHING -> TrackingMessage.ENTER_FRAME
         TrackingState.POSITIONING ->
@@ -92,5 +115,7 @@ class BicepCurlTracker(
         stateMachine.reset()
         counter.reset()
         smoother.reset()
+        countingStartedAtMs = null
+        lastFrameMs = null
     }
 }

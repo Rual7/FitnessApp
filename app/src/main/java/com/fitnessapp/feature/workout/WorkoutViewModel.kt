@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.AndroidViewModel
 import com.fitnessapp.cv.engine.BicepCurlTracker
+import com.fitnessapp.cv.engine.SessionSummary
 import com.fitnessapp.cv.engine.WorkoutSnapshot
 import com.fitnessapp.cv.metrics.FpsMeter
 import com.fitnessapp.cv.pose.MediaPipePoseEngine
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.update
 data class WorkoutUiState(
     val frame: PoseFrame? = null,
     val snapshot: WorkoutSnapshot? = null,
+    /** Set when the user finishes the set; null while the set is running. */
+    val summary: SessionSummary? = null,
     val cameraFps: Float = 0f,
     val poseFps: Float = 0f,
     val inferenceMs: Long = 0,
@@ -29,7 +32,10 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
 
     private val tracker = BicepCurlTracker()
     private val cameraFps = FpsMeter()
-    private val poseFps = FpsMeter()
+
+    /** Replaced by a fresh meter when a new set starts, so the average covers one set only. */
+    @Volatile
+    private var poseFps = FpsMeter()
 
     private val engine: MediaPipePoseEngine? = try {
         MediaPipePoseEngine(application).also { it.setListener(::onPoseResult) }
@@ -48,9 +54,17 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
         engine.submit(image)
     }
 
-    /** Clears the counter and tracking state, e.g. to start a new set. */
+    /** Clears the counter, the tracking state and the summary, to start a new set. */
     fun reset() {
         synchronized(tracker) { tracker.reset() }
+        poseFps = FpsMeter()
+        _state.update { it.copy(snapshot = null, summary = null) }
+    }
+
+    /** Ends the set: freezes its totals into [WorkoutUiState.summary]. */
+    fun finish() {
+        val summary = synchronized(tracker) { tracker.summary(averageFps = poseFps.averageFps) }
+        _state.update { it.copy(summary = summary) }
     }
 
     private fun onPoseResult(frame: PoseFrame) {

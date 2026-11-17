@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.fitnessapp.R
 import com.fitnessapp.cv.engine.WorkoutSnapshot
 import com.fitnessapp.cv.pose.PoseLandmarks
+import com.fitnessapp.ui.formatDuration
 import java.util.Locale
 
 // Text drawn over the camera image must stay readable on any picture, so it does not follow the theme.

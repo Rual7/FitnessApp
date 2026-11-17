@@ -37,15 +37,32 @@ class RepCounter(private val config: CurlConfig = CurlConfig()) {
     var maxAngleDeg: Double? = null
         private set
 
+    /** Mean duration of the counted repetitions, null until one was counted. */
+    val averageRepMs: Long?
+        get() = if (timedReps == 0) null else repTimeSumMs / timedReps
+
     /** True when the current flexed phase started from a confirmed extended phase. */
     private var armed = false
     private var candidate = CurlPhase.UNKNOWN
     private var candidateFrames = 0
 
-    /** Feeds one (smoothed) elbow angle. Returns true when this frame completed a repetition. */
-    fun update(angleDeg: Double): Boolean {
+    /** When the arm last left the extended zone; the start of the repetition in progress. */
+    private var leftExtendedAtMs: Long? = null
+    private var repTimeSumMs = 0L
+    private var timedReps = 0
+
+    /**
+     * Feeds one (smoothed) elbow angle with the time of its frame. Returns true when this frame
+     * completed a repetition.
+     */
+    fun update(angleDeg: Double, timestampMs: Long): Boolean {
         minAngleDeg = minAngleDeg?.let { minOf(it, angleDeg) } ?: angleDeg
         maxAngleDeg = maxAngleDeg?.let { maxOf(it, angleDeg) } ?: angleDeg
+
+        if (phase == CurlPhase.EXTENDED) {
+            if (angleDeg >= config.extendedAboveDeg) leftExtendedAtMs = null
+            else if (leftExtendedAtMs == null) leftExtendedAtMs = timestampMs
+        }
 
         val observed = when {
             angleDeg >= config.extendedAboveDeg -> CurlPhase.EXTENDED
@@ -75,7 +92,14 @@ class RepCounter(private val config: CurlConfig = CurlConfig()) {
         return when (observed) {
             CurlPhase.EXTENDED -> {
                 val completed = phase == CurlPhase.FLEXED && armed
-                if (completed) reps++
+                if (completed) {
+                    reps++
+                    leftExtendedAtMs?.let {
+                        repTimeSumMs += timestampMs - it
+                        timedReps++
+                    }
+                    leftExtendedAtMs = null
+                }
                 phase = CurlPhase.EXTENDED
                 armed = true
                 completed
@@ -99,6 +123,7 @@ class RepCounter(private val config: CurlConfig = CurlConfig()) {
         armed = false
         candidate = CurlPhase.UNKNOWN
         candidateFrames = 0
+        leftExtendedAtMs = null
     }
 
     fun reset() {
@@ -106,6 +131,8 @@ class RepCounter(private val config: CurlConfig = CurlConfig()) {
         reps = 0
         minAngleDeg = null
         maxAngleDeg = null
+        repTimeSumMs = 0
+        timedReps = 0
     }
 }
 

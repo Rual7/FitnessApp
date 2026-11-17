@@ -8,6 +8,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,9 +37,12 @@ import com.fitnessapp.cv.camera.CameraView
 import com.fitnessapp.cv.tracking.TrackingState
 import com.fitnessapp.feature.exercises.Exercise
 
-/** The exercise screen: asks for the camera permission, then shows the live tracking. */
+/**
+ * The exercise screen: asks for the camera permission, then shows the live tracking.
+ * [onFinish] is called after the set has been closed with the Finish button.
+ */
 @Composable
-fun WorkoutScreen(exercise: Exercise, onBack: () -> Unit) {
+fun WorkoutScreen(exercise: Exercise, onBack: () -> Unit, onFinish: () -> Unit) {
     val context = LocalContext.current
     var hasPermission by remember {
         mutableStateOf(
@@ -51,7 +55,7 @@ fun WorkoutScreen(exercise: Exercise, onBack: () -> Unit) {
         Column(Modifier.fillMaxSize().padding(inner)) {
             WorkoutHeader(title = stringResource(exercise.nameRes), onBack = onBack)
             if (hasPermission) {
-                CameraSection()
+                CameraSection(onFinish = onFinish)
             } else {
                 PermissionRequest(onGrant = { launcher.launch(Manifest.permission.CAMERA) })
             }
@@ -75,7 +79,7 @@ private fun WorkoutHeader(title: String, onBack: () -> Unit) {
 }
 
 @Composable
-private fun CameraSection(viewModel: WorkoutViewModel = viewModel()) {
+private fun CameraSection(onFinish: () -> Unit, viewModel: WorkoutViewModel = viewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val analyzer = remember(viewModel) { ImageAnalysis.Analyzer { image -> viewModel.onCameraFrame(image) } }
 
@@ -91,8 +95,21 @@ private fun CameraSection(viewModel: WorkoutViewModel = viewModel()) {
             }
         }
         RepetitionPanel(state.snapshot)
-        TextButton(onClick = viewModel::reset, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            Text(stringResource(R.string.reset_counter))
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TextButton(onClick = viewModel::reset) { Text(stringResource(R.string.reset_counter)) }
+            Button(
+                onClick = {
+                    viewModel.finish()
+                    onFinish()
+                },
+                modifier = Modifier.weight(1f).heightIn(min = 52.dp),
+            ) {
+                Text(stringResource(R.string.workout_finish))
+            }
         }
     }
 }

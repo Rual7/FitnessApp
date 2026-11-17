@@ -23,7 +23,7 @@ class BicepCurlTrackerTest {
             }
         }
 
-        /** One smooth repetition: extended -> flexed -> extended over about two seconds. */
+        /** One smooth repetition: extended -> flexed -> extended over about one second. */
         fun rep(bottom: Double = 40.0, steps: Int = 30) {
             for (i in 0..steps) {
                 val t = i / steps.toDouble()
@@ -168,5 +168,63 @@ class BicepCurlTrackerTest {
         val snap = s.last!!
         assert(snap.minAngleDeg!! in 40.0..60.0) { "min ${snap.minAngleDeg}" }
         assert(snap.maxAngleDeg!! in 165.0..172.0) { "max ${snap.maxAngleDeg}" }
+    }
+
+    @Test
+    fun summaryReportsCountsTimesAndPace() {
+        val s = Sim()
+        s.reachCounting()
+        repeat(3) { s.rep() }
+        val summary = s.tracker.summary(averageFps = 24f)
+
+        assertEquals(3, summary.reps)
+        assertEquals(24f, summary.averageFps, 0.001f)
+        assertEquals(0, summary.outOfFrameCount)
+        assertEquals(0L, summary.outOfFrameMs)
+        assertEquals(summary.durationMs, summary.activeMs)
+        // three repetitions of 31 frames of 33 ms, plus the time held before them
+        assert(summary.durationMs in 3000..6000) { "unexpected duration ${summary.durationMs}" }
+        // one repetition lasts roughly one second
+        assert(summary.averageRepMs!! in 600..1200) { "unexpected pace ${summary.averageRepMs}" }
+        assert(summary.minAngleDeg!! < 60.0 && summary.maxAngleDeg!! > 150.0)
+    }
+
+    @Test
+    fun summarySplitsDurationIntoActiveAndOutOfFrameTime() {
+        val s = Sim()
+        s.reachCounting()
+        s.rep()
+        s.hold(null, 60) // about 2 s out of frame
+        s.hold(170.0, 15)
+        s.rep()
+        val summary = s.tracker.summary()
+
+        assertEquals(2, summary.reps)
+        assertEquals(1, summary.outOfFrameCount)
+        assert(summary.outOfFrameMs in 1000..3000) { "unexpected out-of-frame time ${summary.outOfFrameMs}" }
+        assertEquals(summary.durationMs, summary.activeMs + summary.outOfFrameMs)
+    }
+
+    @Test
+    fun summaryOfASetThatNeverStartedIsEmpty() {
+        val s = Sim()
+        s.hold(null, 20)
+        val summary = s.tracker.summary()
+        assertEquals(0, summary.reps)
+        assertEquals(0L, summary.durationMs)
+        assertEquals(0L, summary.activeMs)
+        assertEquals(null, summary.averageRepMs)
+    }
+
+    @Test
+    fun resetStartsANewSet() {
+        val s = Sim()
+        s.reachCounting()
+        repeat(2) { s.rep() }
+        s.tracker.reset()
+        val summary = s.tracker.summary()
+        assertEquals(0, summary.reps)
+        assertEquals(0L, summary.durationMs)
+        assertEquals(null, summary.minAngleDeg)
     }
 }

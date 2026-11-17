@@ -21,6 +21,7 @@
     <string name="debug_angle_none">no angle</string>
     <string name="reps_label">repetitions</string>
     <string name="reset_counter">Reset</string>
+    <string name="workout_finish">Finish</string>
     <string name="msg_enter_frame">Step into the frame</string>
     <string name="msg_show_arm">Show your arms</string>
     <string name="msg_step_back">Step back</string>
@@ -32,4 +33,27 @@
     <string name="msg_suggest_end">You have been away for a while. Finish the session?</string>
     <string name="out_of_frame_summary">Out of frame: %1$d× · %2$s</string>
     <string name="pose_error">Pose engine failed: %1$s</string>
+
+    <!-- Session summary -->
+    <string name="summary_title">Session finished</string>
+    <string name="summary_reps">Repetitions counted</string>
+    <string name="summary_duration">Duration</string>
+    <string name="summary_active">Active time</string>
+    <string name="summary_out_of_frame">Out of frame</string>
+    <string name="summary_out_of_frame_value">%1$s · %2$d×</string>
+    <string name="summary_pace">Average pace</string>
+    <string name="summary_pace_value">%1$.1f s/rep</string>
+    <string name="summary_range">Range of motion</string>
+    <string name="summary_range_value">%1$d°–%2$d°</string>
+    <string name="summary_fps">Average pose speed</string>
+    <string name="summary_fps_value">%1$.1f fps</string>
+    <string name="summary_not_available">–</string>
+    <string name="summary_manual_title">How many did you count?</string>
+    <string name="summary_manual_label">Your count</string>
+    <string name="summary_difference_hint">Enter your count to compare it with the app</string>
+    <string name="summary_difference_same">Same count: no difference</string>
+    <string name="summary_difference_more">The app counted more: %1$+d</string>
+    <string name="summary_difference_fewer">The app counted fewer: %1$+d</string>
+    <string name="summary_new_set">New set</string>
+    <string name="summary_done">Done</string>
 </resources>
