@@ -52,7 +52,7 @@ _MID = (R_IN + R_OUT) / 2
 DASH_THICK = 15.0
 D_IN, D_OUT = _MID - DASH_THICK / 2, _MID + DASH_THICK / 2   # thin dashes: centred on the band
 
-SEGMENT_DEG = 33.0         # length of every solid segment (about three of the previous short ones)
+SEGMENT_DEG = 33.0         # length of every solid segment
 GAP_DEG = 2.2              # gap between neighbouring segments
 SWEEP_START_DEG = 0.5      # where the first segment starts
 FILL_MAX_DEG = 249.0       # the last solid segment ends before this angle

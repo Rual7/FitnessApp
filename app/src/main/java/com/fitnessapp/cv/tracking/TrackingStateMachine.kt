@@ -3,19 +3,19 @@ package com.fitnessapp.cv.tracking
 enum class TrackingState { SEARCHING, POSITIONING, READY, COUNTING, OUT_OF_FRAME }
 
 /**
- * All durations and frame counts are PLACEHOLDER starting values (docs/PROTOTYPE.md section 5):
- * they are tuned experimentally on the test phone.
+ * Durations and frame counts of the tracking states. All values are placeholder starting points,
+ * to be tuned experimentally on the test phone.
  */
 data class TrackingConfig(
-    /** Consecutive usable frames needed before the countdown starts. placeholder */
+    /** Consecutive usable frames needed before the countdown starts. */
     val readyFrames: Int = 10,
-    /** Countdown before counting begins. placeholder */
+    /** Countdown before counting begins. */
     val countdownMs: Long = 3000,
-    /** A brief occlusion shorter than this does not interrupt counting. placeholder */
+    /** A brief occlusion shorter than this does not interrupt counting. */
     val graceMs: Long = 800,
-    /** Consecutive usable frames needed to resume after leaving the frame. placeholder */
+    /** Consecutive usable frames needed to resume after leaving the frame. */
     val returnStableFrames: Int = 5,
-    /** After this long out of frame, the app suggests ending the session. placeholder */
+    /** After this long out of frame, the app suggests ending the session. */
     val longAbsenceMs: Long = 10_000,
 )
 

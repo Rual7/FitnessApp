@@ -8,7 +8,6 @@ import androidx.camera.core.ImageAnalysis
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -77,15 +76,14 @@ private fun WorkoutHeader(title: String, onBack: () -> Unit) {
 
 @Composable
 private fun CameraSection(viewModel: WorkoutViewModel = viewModel()) {
-    var useFront by remember { mutableStateOf(true) }
     val state by viewModel.state.collectAsStateWithLifecycle()
     val analyzer = remember(viewModel) { ImageAnalysis.Analyzer { image -> viewModel.onCameraFrame(image) } }
 
     Column(Modifier.fillMaxWidth()) {
         // 3:4 portrait box; the preview and the overlay both fit-center the real frame inside it.
         Box(Modifier.fillMaxWidth().aspectRatio(3f / 4f)) {
-            CameraView(useFrontCamera = useFront, analyzer = analyzer, modifier = Modifier.fillMaxSize())
-            SkeletonOverlay(frame = state.frame, mirror = useFront)
+            CameraView(analyzer = analyzer, modifier = Modifier.fillMaxSize())
+            SkeletonOverlay(frame = state.frame)
             DebugPanel(state, Modifier.align(Alignment.TopStart))
             val snapshot = state.snapshot
             if (snapshot != null && snapshot.tracking == TrackingState.OUT_OF_FRAME) {
@@ -93,9 +91,8 @@ private fun CameraSection(viewModel: WorkoutViewModel = viewModel()) {
             }
         }
         RepetitionPanel(state.snapshot)
-        Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            TextButton(onClick = { useFront = !useFront }) { Text(stringResource(R.string.camera_flip)) }
-            TextButton(onClick = viewModel::reset) { Text(stringResource(R.string.reset_counter)) }
+        TextButton(onClick = viewModel::reset, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+            Text(stringResource(R.string.reset_counter))
         }
     }
 }

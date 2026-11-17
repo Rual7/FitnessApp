@@ -12,7 +12,6 @@ import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
@@ -25,7 +24,7 @@ import java.util.concurrent.Executors
 private val ANALYSIS_SIZE = Size(640, 480)
 
 /**
- * Camera preview plus a frame-analysis stream (only the latest frame is kept, so a slow
+ * Front camera preview plus a frame-analysis stream (only the latest frame is kept, so a slow
  * analyzer never builds a queue). The analyzer is responsible for closing each ImageProxy.
  *
  * The preview is shown with FIT_CENTER; callers should give it a 3:4 portrait box so the
@@ -33,7 +32,6 @@ private val ANALYSIS_SIZE = Size(640, 480)
  */
 @Composable
 fun CameraView(
-    useFrontCamera: Boolean,
     analyzer: ImageAnalysis.Analyzer,
     modifier: Modifier = Modifier,
 ) {
@@ -44,6 +42,7 @@ fun CameraView(
 
     val controller = remember {
         LifecycleCameraController(context).apply {
+            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
             setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
             imageAnalysisBackpressureStrategy = ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
             imageAnalysisOutputImageFormat = ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888
@@ -57,19 +56,16 @@ fun CameraView(
         }
     }
 
-    // Re-select the camera whenever the choice changes.
-    SideEffect {
-        controller.cameraSelector =
-            if (useFrontCamera) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
+    DisposableEffect(Unit) {
+        onDispose {
+            controller.clearImageAnalysisAnalyzer()
+            analysisExecutor.shutdown()
+        }
     }
 
     DisposableEffect(lifecycleOwner) {
         controller.bindToLifecycle(lifecycleOwner)
-        onDispose {
-            controller.unbind()
-            controller.clearImageAnalysisAnalyzer()
-            analysisExecutor.shutdown()
-        }
+        onDispose { controller.unbind() }
     }
 
     AndroidView(

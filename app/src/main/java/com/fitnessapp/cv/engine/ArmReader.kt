@@ -20,12 +20,10 @@ data class ArmReading(
 /**
  * Reads the elbow angle (shoulder-elbow-wrist) from a pose frame.
  *
- * Arm choice (docs/PROTOTYPE.md section 3): the arm with usable landmarks; if both are usable,
- * the average of both (simultaneous curls).
- *
- * "Usable" means visibility score >= [minVisibility] for all three landmarks and the landmarks lie
- * inside the image. The 0.5 starting value is a placeholder to tune on real recordings.
- * The presence score is not used yet; the debug panel exposes visibility to tune this.
+ * Only usable arms are read; when both are usable the result is the average of both (simultaneous curls).
+ * "Usable" means a visibility score >= [minVisibility] for all three landmarks and the landmarks
+ * lying inside the image. The default 0.5 is a placeholder to tune on real recordings, and the
+ * presence score is not used yet.
  */
 class ArmReader(private val minVisibility: Float = 0.5f) {
 

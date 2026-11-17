@@ -22,7 +22,7 @@ private val OnCamera = Color.White
 private val ScrimLight = Color.Black.copy(alpha = 0.55f)
 private val ScrimStrong = Color.Black.copy(alpha = 0.7f)
 
-/** Debug readout: FPS, latency, tracking state and the visibility of the arm landmarks (docs/PROTOTYPE.md section 7). */
+/** Debug readout: FPS, latency, elbow angle, tracking state and the visibility of the arm landmarks. */
 @Composable
 internal fun DebugPanel(state: WorkoutUiState, modifier: Modifier = Modifier) {
     val landmarks = state.frame?.landmarks

@@ -1,23 +1,20 @@
 package com.fitnessapp.cv.engine
 
 /**
- * Bicep curl counting parameters.
- *
- * PLACEHOLDER values (docs/PROTOTYPE.md section 3): not validated, to be tuned on real recordings.
- * They are hardcoded for the prototype only; the exercise is not part of the thesis catalog and
- * the catalog exercises will be defined as JSON data (docs/EXERCISES.md).
+ * Bicep curl counting parameters. All values are placeholder starting points, not validated yet:
+ * they are hardcoded because this exercise only exists for the prototype.
  *
  * The gap between the two thresholds is the hysteresis: jitter around a threshold cannot
  * produce false repetitions.
  */
 data class CurlConfig(
-    /** Elbow angle above which the arm counts as extended. placeholder */
+    /** Elbow angle above which the arm counts as extended. */
     val extendedAboveDeg: Double = 150.0,
-    /** Elbow angle below which the arm counts as flexed. placeholder */
+    /** Elbow angle below which the arm counts as flexed. */
     val flexedBelowDeg: Double = 60.0,
-    /** Consecutive frames beyond a threshold before the phase changes. placeholder */
+    /** Consecutive frames beyond a threshold before the phase changes. */
     val minFramesInPhase: Int = 2,
-    /** Smoothing factor of the exponential moving average (1 = no smoothing). placeholder */
+    /** Smoothing factor of the exponential moving average (1 = no smoothing). */
     val smoothingAlpha: Double = 0.5,
 )
 

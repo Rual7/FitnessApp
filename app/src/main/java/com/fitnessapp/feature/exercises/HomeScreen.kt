@@ -63,7 +63,7 @@ private fun ExerciseButton(exercise: Exercise, onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 72.dp), // touch target well above the 44 px minimum (docs/DESIGN.md)
+            .heightIn(min = 72.dp),
         shape = RoundedCornerShape(20.dp),
         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
         colors = ButtonDefaults.buttonColors(

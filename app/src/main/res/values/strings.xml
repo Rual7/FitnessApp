@@ -13,7 +13,6 @@
     <string name="camera_permission_title">Camera access needed</string>
     <string name="camera_permission_body">The camera is used on this device only, to follow your movement. No video is stored or sent anywhere.</string>
     <string name="camera_permission_grant">Grant camera access</string>
-    <string name="camera_flip">Flip camera</string>
     <string name="debug_fps">Camera %1$.1f fps · Pose %2$.1f fps · %3$d ms</string>
     <string name="debug_person_yes">Person detected</string>
     <string name="debug_person_no">No person</string>

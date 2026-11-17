@@ -19,11 +19,11 @@ private const val DRAW_MIN_VISIBILITY = 0.5f
 /**
  * Draws the skeleton over the camera preview. The preview uses FIT_CENTER, so the same
  * fit-center rectangle is computed here from the real frame size; this keeps the skeleton aligned
- * whether the frame arrives in portrait or landscape. [mirror] flips x for the front camera,
- * because the front preview is shown like a mirror.
+ * whether the frame arrives in portrait or landscape. The x axis is flipped because the front
+ * camera preview is shown like a mirror.
  */
 @Composable
-fun SkeletonOverlay(frame: PoseFrame?, mirror: Boolean, modifier: Modifier = Modifier) {
+fun SkeletonOverlay(frame: PoseFrame?, modifier: Modifier = Modifier) {
     Canvas(modifier = modifier.fillMaxSize()) {
         val landmarks = frame?.landmarks ?: return@Canvas
         if (frame.imageWidth <= 0 || frame.imageHeight <= 0) return@Canvas
@@ -36,8 +36,7 @@ fun SkeletonOverlay(frame: PoseFrame?, mirror: Boolean, modifier: Modifier = Mod
 
         fun point(i: Int): Offset {
             val l = landmarks[i]
-            val x = if (mirror) 1f - l.x else l.x
-            return Offset(left + x * drawnW, top + l.y * drawnH)
+            return Offset(left + (1f - l.x) * drawnW, top + l.y * drawnH)
         }
 
         val line = DarkOnBackground
